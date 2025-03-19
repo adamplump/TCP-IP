@@ -1,10 +1,15 @@
 #include <iostream>
 #include <cstring>
 #include <winsock2.h>
+#include <opencv2/opencv.hpp>
 
 #pragma comment(lib, "ws2_32.lib")  // Dodanie biblioteki Winsock
 
 #define PORT 50000
+
+//std::chrono::steady_clock::time_point startTimer;
+//std::chrono::steady_clock::time_point endTimer;
+//std::chrono::duration<double, std::milli> elapsedTimer;
 
 void runServer() {
 
@@ -42,16 +47,54 @@ void runServer() {
 
     std::cout << "Po³¹czono z klientem!\n";
 
-    while (true) {
-        memset(buffer, 0, sizeof(buffer));
-        int valread = recv(clientSocket, buffer, sizeof(buffer), 0);
-        if (valread <= 0) {
-            std::cout << "Po³¹czenie zakoñczone.\n";
-            break;
+    //startTimer = std::chrono::high_resolution_clock::now();
+
+    // Odbiór rozmiaru obrazu
+    int imgSizeNet;
+    if (recv(clientSocket, reinterpret_cast<char*>(&imgSizeNet), sizeof(imgSizeNet), 0) <= 0) {
+        std::cerr << "B³¹d odbioru rozmiaru obrazu\n";
+        closesocket(clientSocket);
+        return;
+    }
+
+    int imgSize = ntohl(imgSizeNet);
+    std::cout << "Odebrany rozmiar obrazu: " << imgSize << " bajtów\n";
+
+    // Odbiór obrazu
+    std::vector<uchar> data(imgSize);
+    int i = 0;
+    size_t bytesReceived = 0;
+    while (bytesReceived < imgSize) {
+        int received = recv(clientSocket, reinterpret_cast<char*>(data.data()) + bytesReceived, imgSize - bytesReceived, 0);
+        ++i;
+        if (received <= 0) {
+            std::cerr << "B³¹d odbioru obrazu\n";
+            closesocket(clientSocket);
+            return;
         }
-        std::cout << "Klient: " << buffer << std::endl;
-        std::string response = "Serwer otrzyma³: " + std::string(buffer);
-        send(clientSocket, response.c_str(), response.size(), 0);
+        bytesReceived += received;
+        std::cout << "odebrane bajty " << bytesReceived << " bajtów\n";
+    }
+
+    //endTimer = std::chrono::high_resolution_clock::now();
+    //elapsedTimer = endTimer - startTimer;
+    //std::cout << "czas obierania obrazu: " << elapsedTimer.count() << std::endl;
+
+    //startTimer = std::chrono::high_resolution_clock::now();
+    // Dekodowanie obrazu
+    cv::Mat img = cv::imdecode(data, cv::IMREAD_COLOR);
+
+    //endTimer = std::chrono::high_resolution_clock::now();
+    //elapsedTimer = endTimer - startTimer;
+    //std::cout << "czas dekodowania obrazu: " << elapsedTimer.count() << std::endl;
+
+    if (img.empty()) {
+        std::cerr << "B³¹d dekodowania obrazu!\n";
+    }
+    else {
+        cv::namedWindow("Odebrany obraz", cv::WINDOW_NORMAL);
+        cv::imshow("Odebrany obraz", img);
+        cv::waitKey(0);
     }
 
     closesocket(clientSocket);
