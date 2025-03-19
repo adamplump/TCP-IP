@@ -75,14 +75,14 @@ void runServer() {
         bytesReceived += received;
         std::cout << "odebrane bajty " << bytesReceived << " bajtów\n";
     }
-
+    std::cout << "i: " << i << std::endl;
     //endTimer = std::chrono::high_resolution_clock::now();
     //elapsedTimer = endTimer - startTimer;
     //std::cout << "czas obierania obrazu: " << elapsedTimer.count() << std::endl;
 
     //startTimer = std::chrono::high_resolution_clock::now();
     // Dekodowanie obrazu
-    cv::Mat img = cv::imdecode(data, cv::IMREAD_COLOR);
+    cv::Mat img = cv::imdecode(data, cv::IMREAD_GRAYSCALE);
 
     //endTimer = std::chrono::high_resolution_clock::now();
     //elapsedTimer = endTimer - startTimer;

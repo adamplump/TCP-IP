@@ -24,8 +24,8 @@ void runClient() {
     sockaddr_in servAddr;
 
     // Wczytaj obraz i sprawdź, czy jest poprawny
-    //cv::String fileread = "C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\3. Zdjęcia\\Camera3_dalsa.jpg";
-    cv::String fileread = "C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\podpis.jpg";
+    cv::String fileread = "C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\3. Zdjęcia\\Camera3_dalsa.jpg";
+    //cv::String fileread = "C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\podpis.jpg";
     cv::Mat img = cv::imread(fileread, cv::IMREAD_GRAYSCALE);
 
     if (img.empty()) {
@@ -35,16 +35,16 @@ void runClient() {
 
     startTimer = std::chrono::high_resolution_clock::now();
     // Kompresja obrazu do JPEG
-    //std::vector<uchar> buf;
-    //std::vector<int> params = { cv::IMWRITE_JPEG_QUALITY, 30,  // Obniżona jakość, szybka kompresja
-    //cv::IMWRITE_JPEG_OPTIMIZE, 0,  // Wyłączenie optymalizacji (przyspiesza)
-    //cv::IMWRITE_JPEG_PROGRESSIVE, 0 }; // Wyłączenie progresywnej kompresji
-    //cv::imencode(".jpg", img, buf, params);
+    std::vector<uchar> buf;
+    std::vector<int> params = { cv::IMWRITE_JPEG_QUALITY, 30,  // Obniżona jakość, szybka kompresja
+    cv::IMWRITE_JPEG_OPTIMIZE, 0,  // Wyłączenie optymalizacji (przyspiesza)
+    cv::IMWRITE_JPEG_PROGRESSIVE, 0 }; // Wyłączenie progresywnej kompresji
+    cv::imencode(".jpg", img, buf, params);
 
     // Wczytanie i kompresja obrazu do WebP coś nie działa dla dużego obrazu
-    std::vector<uchar> buf;
-    std::vector<int> params = { cv::IMWRITE_WEBP_QUALITY, 50 };
-    cv::imencode(".webp", img, buf, params);
+    //std::vector<uchar> buf;
+    //std::vector<int> params = { cv::IMWRITE_WEBP_QUALITY, 50 };
+    //cv::imencode(".webp", img, buf, params);
 
     endTimer = std::chrono::high_resolution_clock::now();
     elapsedTimer = endTimer - startTimer;

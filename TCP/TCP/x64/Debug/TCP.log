@@ -1,3 +1,6 @@
 ﻿  client.cpp
 C:\Home\GITHUB\TCP-IP\TCP-IP\TCP\client.cpp(89,94): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  server.cpp
+C:\Home\GITHUB\TCP-IP\TCP-IP\TCP\server.cpp(68,105): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
   TCP.vcxproj -> C:\Home\GITHUB\TCP-IP\TCP-IP\TCP\x64\Debug\TCP.exe
