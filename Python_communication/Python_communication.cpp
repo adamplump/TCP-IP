@@ -1,5 +1,28 @@
 ﻿#include <Python.h>
 #include <iostream>
+#include <vector>
+
+//std::vector<std::tuple<std::string, double, double, double>> PyListToVector(PyObject* pList) {
+//    std::vector<std::tuple<std::string, double, double, double>> vec;
+//
+//    if (PyList_Check(pList)) {
+//        Py_ssize_t list_size = PyList_Size(pList);
+//
+//        for (Py_ssize_t i = 0; i < list_size; i++) {
+//            PyObject* pItem = PyList_GetItem(pList, i); // Pobieramy element listy (tuple)
+//
+//            if (PyTuple_Check(pItem) && PyTuple_Size(pItem) == 4) {
+//                vec.emplace_back(
+//                    PyUnicode_AsUTF8(PyTuple_GetItem(pItem, 0)), // string
+//                    PyFloat_AsDouble(PyTuple_GetItem(pItem, 1)), // double
+//                    PyFloat_AsDouble(PyTuple_GetItem(pItem, 2)), // double
+//                    PyFloat_AsDouble(PyTuple_GetItem(pItem, 3))  // double
+//                );
+//            }
+//        }
+//    }
+//    return vec;
+//}
 
 void processDXF_Cpp(const std::string& file_path, const std::string& output_file) {
     // Inicjalizacja interpretera Pythona
@@ -34,7 +57,7 @@ void processDXF_Cpp(const std::string& file_path, const std::string& output_file
     PyTuple_SetItem(pArgs, 0, PyUnicode_FromString(file_path.c_str()));
     PyTuple_SetItem(pArgs, 1, PyUnicode_FromString(output_file.c_str()));
 
-    // 5️⃣ Wywołanie funkcji
+    // Wywołanie funkcji
     PyObject* pValue = PyObject_CallObject(pFunc, pArgs);
     if (pValue == nullptr) {
         std::cerr << "Błąd podczas wywoływania process_dxf()" << std::endl;
@@ -43,6 +66,14 @@ void processDXF_Cpp(const std::string& file_path, const std::string& output_file
     else {
         std::cout << "Plik DXF przetworzony pomyślnie!" << std::endl;
     }
+
+    //std::vector<std::tuple<std::string, double, double, double>> extracted_data = PyListToVector(pValue);
+
+    //// Wyświetlanie wyników
+    //for (const auto& item : extracted_data) {
+    //    std::cout << std::get<0>(item) << " (" << std::get<1>(item) << ", "
+    //        << std::get<2>(item) << ") - " << std::get<3>(item) << std::endl;
+    //}
 
     // Sprzątanie pamięci
     Py_DECREF(pArgs);
