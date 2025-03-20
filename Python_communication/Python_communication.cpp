@@ -1,20 +1,63 @@
-// Python_communication.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
+﻿#include <Python.h>
 #include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+void processDXF_Cpp(const std::string& file_path, const std::string& output_file) {
+    // Inicjalizacja interpretera Pythona
+    Py_Initialize();
+
+    // Pobranie sys.path
+    PyObject* sysPath = PySys_GetObject("path");
+
+    // Dodanie katalogu, w którym znajduje się skrypt
+    PyList_Append(sysPath, PyUnicode_DecodeFSDefault("C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\05.DXF newer"));
+
+    // Importowanie modułu 
+    PyObject* pModule = PyImport_ImportModule("ReadDXF_system_exe");
+    if (!pModule) {
+        std::cerr << "Nie można załadować modułu ReadDXF_system_exe.py!" << std::endl;
+        Py_Finalize();
+        return;
+    }
+
+    // Pobranie funkcji process_dxf()
+    PyObject* pFunc = PyObject_GetAttrString(pModule, "process_dxf");
+    if (!pFunc || !PyCallable_Check(pFunc)) {
+        std::cerr << "Nie znaleziono funkcji process_dxf()" << std::endl;
+        Py_XDECREF(pFunc);
+        Py_XDECREF(pModule);
+        Py_Finalize();
+        return;
+    }
+
+    // Konwersja argumentów do Pythona
+    PyObject* pArgs = PyTuple_New(2);
+    PyTuple_SetItem(pArgs, 0, PyUnicode_FromString(file_path.c_str()));
+    PyTuple_SetItem(pArgs, 1, PyUnicode_FromString(output_file.c_str()));
+
+    // 5️⃣ Wywołanie funkcji
+    PyObject* pValue = PyObject_CallObject(pFunc, pArgs);
+    if (pValue == nullptr) {
+        std::cerr << "Błąd podczas wywoływania process_dxf()" << std::endl;
+        PyErr_Print();
+    }
+    else {
+        std::cout << "Plik DXF przetworzony pomyślnie!" << std::endl;
+    }
+
+    // Sprzątanie pamięci
+    Py_DECREF(pArgs);
+    Py_DECREF(pFunc);
+    Py_DECREF(pModule);
+
+    // Zamknięcie interpretera
+    Py_Finalize();
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+int main() {
+    std::string file_path = "C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\05.DXF newer\\HDES_2_S083239103M_wieniec dolny.DXF";
+    std::string output_file = "C:\\Home\\PROJEKTY\\2024-11-07 Ikea - pomiar plyt\\05.DXF newer\\output.csv";
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+    processDXF_Cpp(file_path, output_file);
+
+    return 0;
+}
