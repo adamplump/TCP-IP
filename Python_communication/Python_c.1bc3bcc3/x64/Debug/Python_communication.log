@@ -1,2 +1,2 @@
-﻿Python_communication.obj : error LNK2019: unresolved external symbol __imp__Py_DECREF_DecRefTotal referenced in function Py_DECREF
-C:\Home\GITHUB\TCP-IP\TCP-IP\Python_communication\x64\Debug\Python_communication.exe : fatal error LNK1120: 1 unresolved externals
+﻿  Python_communication.cpp
+LINK : fatal error LNK1104: cannot open file 'python312_d.lib'
